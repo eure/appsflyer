@@ -2,14 +2,34 @@ package csv
 
 import (
 	"encoding/csv"
+	"io"
+	"os"
 	"reflect"
 	"strings"
 )
 
-func Parse(body string, v interface{}, f func(result interface{})) error {
-
+func getReader(body string) *csv.Reader {
 	reader := csv.NewReader(strings.NewReader(strings.TrimSuffix(body, "\n")))
 	reader.FieldsPerRecord = -1
+	return reader
+}
+
+func Write(body string, file *os.File) error {
+	reader := getReader(body)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return err
+	}
+	writer := csv.NewWriter(file)
+	if err := writer.WriteAll(records); err != nil {
+		return err
+	}
+	writer.Flush()
+	return nil
+}
+
+func Parse(body string, v interface{}, f func(result interface{})) error {
+	reader := getReader(body)
 
 	headers, err := reader.Read()
 	if err != nil {
@@ -22,6 +42,9 @@ func Parse(body string, v interface{}, f func(result interface{})) error {
 	const tag = "csv"
 	for {
 		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			break
 		}
