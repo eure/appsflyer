@@ -22,12 +22,20 @@ type (
 		MediaSource string
 		Reattr      string
 	}
+	BuckupS3Option struct {
+		AccessKeyID     string
+		SecretAccessKey string
+		Region          string
+		Bucket          string
+	}
 	Client struct {
 		HTTPClient *http.Client
 
 		APIBaseURL           string
 		APIRequiredParameter RequiredParameter
 		APIOptionalParameter OptionalParameter
+
+		BuckupS3Option *BuckupS3Option
 	}
 )
 
@@ -54,6 +62,10 @@ func NewClientWithParam(apiToken, appID, fromDate, toDate string) *Client {
 
 func (c *Client) SetOptionalParameter(p OptionalParameter) {
 	c.APIOptionalParameter = p
+}
+
+func (c *Client) SetBuckupS3Option(o BuckupS3Option) {
+	c.BuckupS3Option = &o
 }
 
 func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
@@ -96,4 +108,8 @@ func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
 		return nil, fmt.Errorf("StatusCode = %d, Message = %s ", resp.StatusCode, string(body))
 	}
 	return body, nil
+}
+
+func (c *Client) GetCSVFileNameByDateRange() string {
+	return fmt.Sprintf("appsflyer[%s~%s].csv", c.APIRequiredParameter.FromDate, c.APIRequiredParameter.ToDate)
 }
