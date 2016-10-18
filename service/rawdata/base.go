@@ -7,7 +7,6 @@ import (
 	"github.com/eure/appsflyer/dispatcher"
 	"github.com/eure/appsflyer/model/rawdata"
 	"github.com/eure/appsflyer/util/csv"
-	"github.com/eure/appsflyer/util/s3"
 )
 
 func getReports(endpoint string, client *dispatcher.Client) ([]rawdata.Report, error) {
@@ -21,7 +20,7 @@ func getReports(endpoint string, client *dispatcher.Client) ([]rawdata.Report, e
 	}); err != nil {
 		return nil, err
 	}
-	return entities, backupS3IfNeed(client, body)
+	return entities, backupIfNeed(client, body)
 }
 
 func getEachReport(endpoint string, client *dispatcher.Client, f func(report rawdata.Report)) error {
@@ -34,12 +33,12 @@ func getEachReport(endpoint string, client *dispatcher.Client, f func(report raw
 	}); err != nil {
 		return err
 	}
-	return backupS3IfNeed(client, body)
+	return backupIfNeed(client, body)
 }
 
-func backupS3IfNeed(client *dispatcher.Client, body []byte) error {
-	s3Option := client.BuckupS3Option
-	if s3Option == nil {
+func backupIfNeed(client *dispatcher.Client, body []byte) error {
+	buckupOption := client.BuckupOption
+	if buckupOption == nil {
 		return nil
 	}
 	fileName := path.Join(os.TempDir(), client.GetCSVFileNameByDateRange())
@@ -51,13 +50,7 @@ func backupS3IfNeed(client *dispatcher.Client, body []byte) error {
 	if err := csv.Write(string(body), file); err != nil {
 		return err
 	}
-	s3Uploader := s3.Uploader{
-		AccessKeyID:     s3Option.AccessKeyID,
-		SecretAccessKey: s3Option.SecretAccessKey,
-		Region:          s3Option.Region,
-		Bucket:          s3Option.Bucket,
-	}
-	if err := s3Uploader.Do(file); err != nil {
+	if err := buckupOption.Do(file); err != nil {
 		return err
 	}
 	return os.Remove(fileName)

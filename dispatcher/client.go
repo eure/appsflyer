@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 
 	"github.com/eure/appsflyer/util"
@@ -22,11 +23,8 @@ type (
 		MediaSource string
 		Reattr      string
 	}
-	BuckupS3Option struct {
-		AccessKeyID     string
-		SecretAccessKey string
-		Region          string
-		Bucket          string
+	BuckupOption struct {
+		Do func(*os.File) error
 	}
 	Client struct {
 		HTTPClient *http.Client
@@ -35,7 +33,7 @@ type (
 		APIRequiredParameter RequiredParameter
 		APIOptionalParameter OptionalParameter
 
-		BuckupS3Option *BuckupS3Option
+		BuckupOption *BuckupOption
 	}
 )
 
@@ -64,8 +62,8 @@ func (c *Client) SetOptionalParameter(p OptionalParameter) {
 	c.APIOptionalParameter = p
 }
 
-func (c *Client) SetBuckupS3Option(o BuckupS3Option) {
-	c.BuckupS3Option = &o
+func (c *Client) SetBuckupOption(o BuckupOption) {
+	c.BuckupOption = &o
 }
 
 func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
