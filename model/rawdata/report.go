@@ -21,6 +21,14 @@ type Report struct {
 	IDFA                string `json:"idfa" csv:"IDFA"`
 	CustomerUserID      string `json:"customer_user_id" csv:"Customer User ID"`
 	IsRetargeting       string `json:"is_retargeting" csv:"Is Retargeting"`
+	IP                  string `json:"ip" csv:"IP"`
+	AppsflyerID         string `json:"appsflyer_id" csv:"AppsFlyer ID"`
+	AndroidID           string `json:"android_id" csv:"Android ID"`
+	OSVersion           string `json:"os_version" csv:"OS Version"`
+	AppVersion          string `json:"app_version" csv:"App Version"`
+	SDKVersion          string `json:"sdk_version" csv:"SDK Version"`
+	UserAgent           string `json:"user_agent" csv:"User Agent"`
+	OriginalURL         string `json:"original_url" csv:"Original URL"`
 }
 
 func (r *Report) GetAttributedTouchTime() (time.Time, error) {
