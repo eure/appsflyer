@@ -28,7 +28,7 @@ func Write(body string, file *os.File) error {
 	return nil
 }
 
-func Parse(body string, v interface{}, f func(result interface{})) error {
+func Parse(body string, v interface{}, f func(result interface{}), tags ...string) error {
 	reader := getReader(body)
 
 	headers, err := reader.Read()
@@ -39,7 +39,10 @@ func Parse(body string, v interface{}, f func(result interface{})) error {
 	dataType := reflect.TypeOf(v)
 	newData := reflect.New(dataType).Elem()
 
-	const tag = "csv"
+	if len(tags) == 0 {
+		tags = []string{"csv"}
+	}
+
 	for {
 		row, err := reader.Read()
 		if err == io.EOF {
@@ -49,13 +52,18 @@ func Parse(body string, v interface{}, f func(result interface{})) error {
 			break
 		}
 		for i := 0; i < dataType.NumField(); i++ {
-			f := dataType.Field(i)
-			index := 0
-			fieldName := f.Tag.Get(tag)
+			var (
+				f     = dataType.Field(i)
+				index = -1
+			)
+			fieldName := f.Tag.Get(tags[0])
 			for k, v := range headers {
 				if v == fieldName {
 					index = k
 				}
+			}
+			if index == -1 {
+				continue
 			}
 			newField := newData.FieldByName(f.Name)
 			if !newField.IsValid() || !newField.CanSet() {
