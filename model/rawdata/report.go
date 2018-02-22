@@ -29,6 +29,8 @@ type Report struct {
 	SDKVersion          string `json:"sdk_version" csv:"SDK Version"`
 	UserAgent           string `json:"user_agent" csv:"User Agent"`
 	OriginalURL         string `json:"original_url" csv:"Original URL"`
+	CountryCode         string `json:"country_code" csv:"Country Code"`
+	Language            string `json:"language" csv:"Language"`
 }
 
 func (r *Report) GetAttributedTouchTime() (time.Time, error) {
