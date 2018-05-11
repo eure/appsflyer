@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
 
 	"github.com/eure/appsflyer/util"
@@ -19,12 +18,10 @@ type (
 		ToDate   string
 	}
 	OptionalParameter struct {
-		Category    string
 		MediaSource string
+		EventName   string
+		Category    string
 		Reattr      string
-	}
-	BuckupOption struct {
-		Do func(*os.File) error
 	}
 	Client struct {
 		HTTPClient *http.Client
@@ -32,8 +29,6 @@ type (
 		APIBaseURL           string
 		APIRequiredParameter RequiredParameter
 		APIOptionalParameter OptionalParameter
-
-		BuckupOption *BuckupOption
 	}
 )
 
@@ -62,10 +57,6 @@ func (c *Client) SetOptionalParameter(p OptionalParameter) {
 	c.APIOptionalParameter = p
 }
 
-func (c *Client) SetBuckupOption(o BuckupOption) {
-	c.BuckupOption = &o
-}
-
 func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
 	u, err := url.Parse(c.APIBaseURL)
 	if err != nil {
@@ -82,11 +73,14 @@ func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
 	values.Set("to", c.APIRequiredParameter.ToDate)
 
 	// Optional parameters
-	if c.APIOptionalParameter.Category != "" {
-		values.Set("category", c.APIOptionalParameter.Category)
+	if c.APIOptionalParameter.EventName != "" {
+		values.Set("event_name", c.APIOptionalParameter.EventName)
 	}
 	if c.APIOptionalParameter.MediaSource != "" {
 		values.Set("media_source", c.APIOptionalParameter.MediaSource)
+	}
+	if c.APIOptionalParameter.Category != "" {
+		values.Set("category", c.APIOptionalParameter.Category)
 	}
 	if c.APIOptionalParameter.Reattr != "" {
 		values.Set("reattr", c.APIOptionalParameter.Reattr)
@@ -106,8 +100,4 @@ func (c *Client) DispatchGetRequest(endpoint string) ([]byte, error) {
 		return nil, fmt.Errorf("StatusCode = %d, Message = %s ", resp.StatusCode, string(body))
 	}
 	return body, nil
-}
-
-func (c *Client) GetCSVFileNameByDateRange() string {
-	return fmt.Sprintf("appsflyer[%s~%s].csv", c.APIRequiredParameter.FromDate, c.APIRequiredParameter.ToDate)
 }
