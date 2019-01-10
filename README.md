@@ -7,7 +7,7 @@ https://support.appsflyer.com/hc/en-us/articles/207034346-Pull-APIs-Pulling-Apps
 ## Installation
 
 ```bash
-$ go get github.com/eure/appsflyer
+$ go get github.com/eure/appsflyer/...
 ```
 
 ## Usage
