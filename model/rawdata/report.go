@@ -70,7 +70,6 @@ type Report struct {
 	Carrier                   string `json:"carrier" csv:"Carrier"`
 	AppsflyerID               string `json:"appsflyer_id" csv:"AppsFlyer ID"`
 	AndroidID                 string `json:"android_id" csv:"Android ID"`
-	CustomerUserID            string `json:"customer_user_id" csv:"Customer User ID"`
 	IMEI                      string `json:"imei" csv:"IMEI"`
 	IDFV                      string `json:"idfv" csv:"IDFV"`
 	Platform                  string `json:"platform" csv:"Platform"`
@@ -90,7 +89,6 @@ type Report struct {
 	UserAgent                 string `json:"user_agent" csv:"User Agent"`
 	HTTPReferrer              string `json:"http_referrer" csv:"HTTP Referrer"`
 	OriginalURL               string `json:"original_url" csv:"Original URL"`
-	CountryCode               string `json:"country_code" csv:"Country Code"`
 	Language                  string `json:"language" csv:"Language"`
 }
 
